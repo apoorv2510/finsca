@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Kit Gallery</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#f59e0b',
+                        accent: '#dc2626',
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-text {
+            background: linear-gradient(90deg, #2563eb, #dc2626);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .kit-card {
+            transition: all 0.3s ease;
+        }
+        .kit-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .kit-image {
+            transition: transform 0.3s ease;
+        }
+        .placeholder-icon {
+            font-size: 5rem;
+            opacity: 0.2;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen p-4 md:p-8">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-extrabold mb-2 gradient-text">
+                <i class="fas fa-images mr-2"></i>Kit Gallery
+            </h1>
+            <p class="text-gray-600">Explore designs created by our community</p>
+        </div>
+
+        <!-- Gallery Content -->
+        <div class="bg-white bg-opacity-95 rounded-xl shadow-xl p-6">
+            {% if kits %}
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {% for kit in kits %}
+                        <div class="kit-card bg-white rounded-xl shadow-md overflow-hidden animate-fade-in">
+                            <!-- Kit Image -->
+                            <div class="relative overflow-hidden h-64">
+                                {% if kit.file_url %}
+                                    <img src="{{ kit.file_url }}" alt="Kit Design" 
+                                         class="kit-image w-full h-full object-cover">
+                                {% else %}
+                                    <div class="w-full h-full bg-gray-100 flex items-center justify-center">
+                                        <i class="fas fa-tshirt placeholder-icon text-gray-400"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Kit Details -->
+                            <div class="p-4">
+                                <h3 class="font-bold text-gray-800 mb-2 truncate">"{{ kit.design }}"</h3>
+                                
+                                <div class="text-sm text-gray-500 mb-3">
+                                    <div class="flex items-center mb-1">
+                                        <i class="fas fa-user mr-2"></i>
+                                        <span>User {{ kit.user_id }}</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-clock mr-2"></i>
+                                        <span>{{ kit.timestamp }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <!-- Empty State -->
+                <div class="text-center py-12">
+                    <div class="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-tshirt text-3xl text-gray-400"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 mb-1">No kits found</h3>
+                    <p class="text-gray-500 mb-6">Be the first to create and share your kit design!</p>
+                    <a href="/" class="inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-opacity-90 transition">
+                        <i class="fas fa-plus mr-2"></i>
+                        Create Your Kit
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Back to Home -->
+        <div class="mt-6 text-center">
+            <a href="/" class="inline-flex items-center text-primary hover:text-accent transition">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Back to Home
+            </a>
+        </div>
+    </div>
+</body>
+</html>

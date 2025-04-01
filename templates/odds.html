@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Football Odds</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #eef2f7;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #007bff;
+        }
+        table {
+            width: 100%;
+            max-width: 800px;
+            margin: auto;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Football Odds</h1>
+
+    {% if odds %}
+        <table>
+            <tr><th>Match</th><th>Bookmaker</th><th>Odds</th></tr>
+            {% for odd in odds %}
+                <tr><td>{{ odd.match }}</td><td>{{ odd.bookmaker }}</td><td>{{ odd.odds }}</td></tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No odds available at the moment.</p>
+    {% endif %}
+
+    <a href="/index" class="back-link">🏠 Back to Home</a>
+</body>
+</html>

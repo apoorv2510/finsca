@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Football Boots Collection</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .gradient-text {
+            background: linear-gradient(90deg, #f59e0b, #dc2626);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .boot-card {
+            transition: all 0.3s ease;
+            backface-visibility: hidden;
+        }
+        .boot-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .position-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 9999px;
+        }
+        .brand-filter-btn.active {
+            background-color: #2563eb;
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-900">
+    <div class="min-h-screen p-4 md:p-8">
+        <div class="max-w-6xl mx-auto">
+            <!-- Header -->
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-extrabold gradient-text">
+                        <i class="fas fa-shoe-prints mr-2"></i>Football Boots Collection
+                    </h1>
+                    <p class="text-gray-600 mt-1">Browse our extensive collection of football boots</p>
+                </div>
+                <a href="/" class="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back to Home</span>
+                </a>
+            </div>
+
+            <!-- Filters -->
+            <div class="bg-white rounded-xl p-4 mb-6 shadow-sm">
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                        <h3 class="font-bold text-gray-800 mb-2">Filter by Position:</h3>
+                        <div class="flex space-x-2">
+                            <button class="brand-filter-btn bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm hover:bg-gray-300 transition active" data-filter="all">
+                                All Positions
+                            </button>
+                            <button class="brand-filter-btn bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm hover:bg-red-200 transition" data-filter="Attack">
+                                Attack
+                            </button>
+                            <button class="brand-filter-btn bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm hover:bg-blue-200 transition" data-filter="Midfield">
+                                Midfield
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="font-bold text-gray-800 mb-2">Filter by Brand:</h3>
+                        <div class="flex space-x-2">
+                            <button class="brand-filter-btn bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm hover:bg-gray-300 transition active" data-brand="all">
+                                All Brands
+                            </button>
+                            <button class="brand-filter-btn bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm hover:bg-gray-300 transition" data-brand="Nike">
+                                Nike
+                            </button>
+                            <button class="brand-filter-btn bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm hover:bg-gray-300 transition" data-brand="Adidas">
+                                Adidas
+                            </button>
+                            <button class="brand-filter-btn bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm hover:bg-gray-300 transition" data-brand="New Balance">
+                                New Balance
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Boots Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="boots-container">
+                <!-- Boot cards will be dynamically inserted here -->
+            </div>
+
+            <!-- Loading indicator -->
+            <div id="loading-indicator" class="text-center py-8">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-600"></div>
+                <p class="text-gray-600 mt-2">Loading boots...</p>
+            </div>
+
+            <!-- Error message container (hidden by default) -->
+            <div id="error-message" class="hidden text-center py-8">
+                <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
+                <h3 class="text-xl font-bold text-gray-700">Error Loading Boots</h3>
+                <p id="error-text" class="text-gray-600 mt-2"></p>
+                <button onclick="retryLoading()" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                    <i class="fas fa-sync-alt mr-2"></i>Retry
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="text-center text-sm text-gray-600 pb-4">
+        <p>© 2023 Football Boots Collection. All rights reserved.</p>
+    </div>
+
+    <script>
+        // Sample data that matches your JSON format
+        const sampleData = {
+            "statusCode": 200,
+            "body": JSON.stringify({
+                "status": "success",
+                "data": [
+                    {"BootsTopPlayers": "Cristiano Ronaldo", "BootsName": "Mercurial Superfly VII", "RecordID": "63", "BootsBrand": "Nike", "BootsPosition": "Attack"},
+                    {"BootsTopPlayers": "Cristiano Ronaldo", "BootsName": "Mercurial Superfly V", "RecordID": "92", "BootsBrand": "Nike", "BootsPosition": "Attack"},
+                    {"BootsTopPlayers": "Erling Haaland", "BootsName": "Phantom GT", "RecordID": "64", "BootsBrand": "Nike", "BootsPosition": "Midfield"},
+                    {"BootsTopPlayers": "Jude Bellingham", "BootsName": "Predator Mania", "RecordID": "36", "BootsBrand": "Adidas", "BootsPosition": "Midfield"},
+                    {"BootsTopPlayers": "Bukayo Saka", "BootsName": "Furon v6", "RecordID": "49", "BootsBrand": "New Balance", "BootsPosition": "Attack"},
+                    {"BootsTopPlayers": "Paulo Dybala", "BootsName": "Copa 20+", "RecordID": "33", "BootsBrand": "Adidas", "BootsPosition": "Midfield"},
+                    {"BootsTopPlayers": "Lionel Messi", "BootsName": "X Ghosted+", "RecordID": "22", "BootsBrand": "Adidas", "BootsPosition": "Attack"}
+                ]
+            })
+        };
+
+        // Function to simulate API fetch
+        async function fetchBoots() {
+            try {
+                // Simulate API delay
+                await new Promise(resolve => setTimeout(resolve, 800));
+                
+                // Parse the sample data
+                const data = JSON.parse(sampleData.body);
+                
+                // Validate the data structure
+                if (!data || !data.data || !Array.isArray(data.data)) {
+                    throw new Error("Invalid data format");
+                }
+                
+                return data;
+            } catch (error) {
+                console.error("Error loading boots:", error);
+                showError(error.message || "Failed to load boots. Please try again later.");
+                return {data: [], message: "Error loading boots", status: "error"};
+            }
+        }
+
+        // Show error message
+        function showError(message) {
+            document.getElementById('loading-indicator').classList.add('hidden');
+            document.getElementById('error-text').textContent = message;
+            document.getElementById('error-message').classList.remove('hidden');
+        }
+
+        // Hide error message
+        function hideError() {
+            document.getElementById('error-message').classList.add('hidden');
+        }
+
+        // Retry loading
+        function retryLoading() {
+            hideError();
+            document.getElementById('loading-indicator').classList.remove('hidden');
+            renderBoots(currentPositionFilter, currentBrandFilter);
+        }
+
+        // Render boots with filters
+        async function renderBoots(positionFilter = 'all', brandFilter = 'all') {
+            const container = document.getElementById('boots-container');
+            container.innerHTML = '';
+            
+            // Show loading indicator
+            document.getElementById('loading-indicator').classList.remove('hidden');
+            
+            try {
+                const {data: bootsData} = await fetchBoots();
+                
+                bootsData.forEach(boot => {
+                    if ((positionFilter === 'all' || boot.BootsPosition === positionFilter) && 
+                        (brandFilter === 'all' || boot.BootsBrand.toLowerCase() === brandFilter.toLowerCase())) {
+                        
+                        const positionColor = 
+                            boot.BootsPosition === 'Attack' ? 'bg-red-500' :
+                            boot.BootsPosition === 'Midfield' ? 'bg-blue-500' :
+                            'bg-green-500';
+                        
+                        const brandColor = 
+                            boot.BootsBrand === 'Nike' ? 'bg-blue-100 text-blue-800' :
+                            boot.BootsBrand === 'Adidas' ? 'bg-black bg-opacity-10 text-gray-800' :
+                            boot.BootsBrand === 'New Balance' ? 'bg-red-100 text-red-800' :
+                            'bg-purple-100 text-purple-800';
+                        
+                        const card = document.createElement('div');
+                        card.className = 'boot-card bg-white rounded-lg shadow-md overflow-hidden relative';
+                        card.innerHTML = `
+                            <div class="p-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h3 class="font-bold text-gray-800">${boot.BootsName}</h3>
+                                    <span class="position-badge ${positionColor} text-white">${boot.BootsPosition}</span>
+                                </div>
+                                <span class="text-xs ${brandColor} px-2 py-1 rounded-full">${boot.BootsBrand}</span>
+                                <div class="mt-3 flex items-center text-sm text-gray-700">
+                                    <i class="fas fa-user mr-2 text-blue-600"></i>
+                                    <span class="truncate">${boot.BootsTopPlayers}</span>
+                                </div>
+                            </div>
+                            <div class="bg-gray-100 px-4 py-2">
+                                <span class="text-xs text-gray-500">ID: ${boot.RecordID}</span>
+                            </div>
+                        `;
+                        container.appendChild(card);
+                    }
+                });
+                
+                // Hide loading indicator
+                document.getElementById('loading-indicator').classList.add('hidden');
+                
+                // Show message if no boots match filters
+                if (container.innerHTML === '') {
+                    container.innerHTML = `
+                        <div class="col-span-full text-center py-12">
+                            <i class="fas fa-search text-4xl text-gray-400 mb-4"></i>
+                            <h3 class="text-xl font-bold text-gray-700">No boots found</h3>
+                            <p class="text-gray-600 mt-2">Try adjusting your filters</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error("Error rendering boots:", error);
+            }
+        }
+
+        // Initialize filters
+        let currentPositionFilter = 'all';
+        let currentBrandFilter = 'all';
+
+        // Initial render
+        renderBoots();
+
+        // Position filter buttons
+        document.querySelectorAll('[data-filter]').forEach(button => {
+            button.addEventListener('click', function() {
+                currentPositionFilter = this.dataset.filter;
+                renderBoots(currentPositionFilter, currentBrandFilter);
+                
+                // Update active state
+                document.querySelectorAll('[data-filter]').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+
+        // Brand filter buttons
+        document.querySelectorAll('[data-brand]').forEach(button => {
+            button.addEventListener('click', function() {
+                currentBrandFilter = this.dataset.brand;
+                renderBoots(currentPositionFilter, currentBrandFilter);
+                
+                // Update active state
+                document.querySelectorAll('[data-brand]').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

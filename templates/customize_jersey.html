@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>3D Jersey Customizer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#f59e0b',
+                        accent: '#dc2626',
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s infinite',
+                        'spin-slow': 'spin 6s linear infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-text {
+            background: linear-gradient(90deg, #2563eb, #dc2626);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .jersey-preview {
+            transition: all 0.5s ease;
+            transform-style: preserve-3d;
+        }
+        .jersey-preview:hover {
+            transform: rotateY(10deg) rotateX(5deg);
+        }
+        .color-preview {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 10px;
+            border: 2px solid #e2e8f0;
+        }
+        input[type="color"] {
+            -webkit-appearance: none;
+            border: none;
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            background: none;
+            cursor: pointer;
+        }
+        input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+        input[type="color"]::-webkit-color-swatch {
+            border: 2px solid #e2e8f0;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-100 to-gray-200 min-h-screen p-4 md:p-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-extrabold mb-2 gradient-text">
+                <i class="fas fa-tshirt mr-2"></i>3D Jersey Customizer
+            </h1>
+            <p class="text-gray-600">Design your perfect team jersey with live 3D preview</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Customization Form -->
+            <div class="bg-white rounded-xl shadow-xl p-6 md:p-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <i class="fas fa-sliders-h text-primary mr-2"></i> Design Options
+                </h2>
+                
+                <form onsubmit="event.preventDefault(); generateJersey();" class="space-y-6">
+                    <!-- Team Name -->
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">
+                            <i class="fas fa-users mr-1 text-primary"></i> Team Name
+                        </label>
+                        <input type="text" id="team" placeholder="Enter your team name" required
+                               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition">
+                    </div>
+                    
+                    <!-- Jersey Color -->
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">
+                            <i class="fas fa-palette mr-1 text-primary"></i> Jersey Color
+                        </label>
+                        <div class="flex items-center space-x-4">
+                            <input type="color" id="colorPicker" value="#ff0000" class="color-input">
+                            <input type="text" id="color" placeholder="Or enter HEX code (e.g. #FF5733)" 
+                                   class="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition">
+                            <span id="colorDisplay" class="color-preview" style="background-color: #ff0000;"></span>
+                        </div>
+                    </div>
+                    
+                    <!-- Player Number -->
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">
+                            <i class="fas fa-hashtag mr-1 text-primary"></i> Player Number
+                        </label>
+                        <input type="number" id="number" min="1" max="99" placeholder="Enter player number (1-99)" required
+                               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition">
+                    </div>
+                    
+                    <!-- Logo URL -->
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">
+                            <i class="fas fa-image mr-1 text-primary"></i> Team Logo URL
+                        </label>
+                        <div class="flex items-center">
+                            <input type="text" id="logo" placeholder="Paste logo image URL (optional)"
+                                   class="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition">
+                            <button type="button" onclick="document.getElementById('logoUpload').click()" 
+                                    class="ml-2 bg-gray-100 hover:bg-gray-200 p-3 rounded-lg transition">
+                                <i class="fas fa-upload"></i>
+                            </button>
+                            <input type="file" id="logoUpload" accept="image/*" class="hidden">
+                        </div>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <button type="submit" 
+                            class="w-full bg-gradient-to-r from-primary to-accent text-white py-3 px-6 rounded-lg font-bold hover:opacity-90 transition flex items-center justify-center space-x-2 mt-6">
+                        <i class="fas fa-magic"></i>
+                        <span>Generate 3D Jersey</span>
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Jersey Preview -->
+            <div class="bg-white bg-opacity-90 rounded-xl shadow-xl p-6 flex flex-col">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <i class="fas fa-eye text-primary mr-2"></i> Live Preview
+                </h2>
+                
+                <div class="flex-1 flex items-center justify-center">
+                    <div id="loadingSpinner" class="hidden text-primary">
+                        <i class="fas fa-spinner fa-spin text-4xl"></i>
+                    </div>
+                    <img id="jerseyImage" src="" alt="Your customized jersey will appear here" 
+                         class="jersey-preview max-w-full h-auto max-h-96 mx-auto hidden">
+                    <div id="emptyState" class="text-center text-gray-400 p-8">
+                        <i class="fas fa-tshirt text-5xl mb-4"></i>
+                        <p class="text-lg">Your jersey preview will appear here</p>
+                        <p class="text-sm mt-2">Customize the options and click "Generate"</p>
+                    </div>
+                </div>
+                
+                <div class="mt-6 text-center">
+                    <a href="/" class="inline-flex items-center text-primary hover:text-accent transition">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Back to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Color picker synchronization
+        const colorPicker = document.getElementById('colorPicker');
+        const colorInput = document.getElementById('color');
+        const colorDisplay = document.getElementById('colorDisplay');
+        
+        colorPicker.addEventListener('input', function() {
+            colorInput.value = this.value;
+            colorDisplay.style.backgroundColor = this.value;
+        });
+        
+        colorInput.addEventListener('input', function() {
+            if (this.value.match(/^#[0-9A-F]{6}$/i)) {
+                colorPicker.value = this.value;
+                colorDisplay.style.backgroundColor = this.value;
+            }
+        });
+        
+        // Logo upload handling
+        document.getElementById('logoUpload').addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                // In a real app, you would upload this to your server
+                // For demo purposes, we'll just show a local preview
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    document.getElementById('logo').value = event.target.result;
+                };
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+        
+        // Jersey generation
+        function generateJersey() {
+            const team = document.getElementById("team").value;
+            const color = document.getElementById("color").value;
+            const number = document.getElementById("number").value;
+            const logo = document.getElementById("logo").value;
+            
+            // Show loading state
+            document.getElementById('loadingSpinner').classList.remove('hidden');
+            document.getElementById('jerseyImage').classList.add('hidden');
+            document.getElementById('emptyState').classList.add('hidden');
+            
+            // Simulate API call with timeout (replace with actual API call)
+            setTimeout(() => {
+                const apiUrl = `/customize-jersey?team=${encodeURIComponent(team)}&color=${encodeURIComponent(color)}&number=${encodeURIComponent(number)}&logo=${encodeURIComponent(logo)}`;
+                
+                document.getElementById("jerseyImage").src = apiUrl;
+                document.getElementById("jerseyImage").onload = function() {
+                    document.getElementById('loadingSpinner').classList.add('hidden');
+                    document.getElementById('jerseyImage').classList.remove('hidden');
+                };
+                
+                // Error handling
+                document.getElementById("jerseyImage").onerror = function() {
+                    document.getElementById('loadingSpinner').classList.add('hidden');
+                    document.getElementById('emptyState').classList.remove('hidden');
+                    alert("Failed to generate jersey. Please check your inputs and try again.");
+                };
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

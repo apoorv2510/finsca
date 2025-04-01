@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Saved Kit Presets</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .preset-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            margin: 15px;
+            display: inline-block;
+            text-align: left;
+            width: 300px;
+        }
+        h3 {
+            margin: 5px 0;
+        }
+    </style>
+    <script>
+        function fetchPresets() {
+            fetch('/get-kit-presets')
+                .then(response => response.json())
+                .then(presets => {
+                    const presetsDiv = document.getElementById('presets');
+                    presetsDiv.innerHTML = '';
+
+                    presets.forEach(preset => {
+                        const presetCard = document.createElement('div');
+                        presetCard.classList.add('preset-card');
+                        presetCard.innerHTML = `
+                            <h3>${preset.preset_name}</h3>
+                            <p><strong>Design:</strong> ${preset.design}</p>
+                            <p><strong>Saved On:</strong> ${preset.timestamp}</p>
+                        `;
+                        presetsDiv.appendChild(presetCard);
+                    });
+                });
+        }
+
+        window.onload = fetchPresets;
+    </script>
+</head>
+<body>
+    <h1>Your Saved Kit Presets</h1>
+    <div id="presets"></div>
+    <br>
+    <a href="/">Back to Home</a>
+</body>
+</html>
