@@ -1,9 +1,9 @@
-name: Deploy Flask App to EC2
+name: Deploy to EC2
 
 on:
   push:
     branches:
-      - main  # or your desired branch
+      - main
 
 jobs:
   deploy:
@@ -13,17 +13,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.7.0
-        with:
-          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
-
-      - name: Deploy to EC2
+      - name: Set up SSH key
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy code to EC2
+        run: |
+          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
             cd /home/ubuntu/scalable
             git pull origin main
-            source venv/bin/activate  # Skip if not using virtualenv
+            source venv/bin/activate  # if you have a virtualenv
             pip install -r requirements.txt
-            sudo systemctl restart flaskapp  # Assuming systemd service is set up
+            sudo systemctl restart flaskapp
           EOF
